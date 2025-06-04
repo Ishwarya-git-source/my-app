@@ -1,32 +1,48 @@
 version: 0.2
+ 
+env:
 
+  variables:
+
+    AWS_ACCOUNT_ID: "316497517854"
+
+    AWS_DEFAULT_REGION: "ap-south-1"
+ 
 phases:
+
   pre_build:
+
     commands:
-      - echo "🔧 AWS CLI version:"
+
+      - echo Logging in to Amazon ECR...
+
       - aws --version
-      - echo "🐳 Docker version:"
-      - docker --version
-      - echo "🔐 Logging into: 316497517854.dkr.ecr.ap-south-1.amazonaws.com"
-      - >
-        aws ecr get-login-password --region ap-south-1 |
-        docker login --username AWS --password-stdin 316497517854.dkr.ecr.ap-south-1.amazonaws.com
+
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
 
   build:
+
     commands:
-      - echo "🚧 Building Docker image..."
+
+      - echo Build started on `date`
+
+      - echo Building the Docker image...
+
       - docker build -t my-app .
-      - docker tag my-app:latest 316497517854.dkr.ecr.ap-south-1.amazonaws.com/my-app:latest
+
+      - docker tag my-app:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/my-app:latest
 
   post_build:
-    commands:
-      - echo "📤 Pushing Docker image to ECR..."
-      - docker push 316497517854.dkr.ecr.ap-south-1.amazonaws.com/my-app:latest
-      - echo "📦 Creating imagedefinitions.json for ECS..."
-      - >
-        printf '[{"name":"my-app-container","imageUri":"%s"}]'
-        316497517854.dkr.ecr.ap-south-1.amazonaws.com/my-app:latest > imagedefinitions.json
 
+    commands:
+
+      - echo Pushing the Docker image...
+
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/my-app:latest
+
+      - printf '[{"name":"my-app-container","imageUri":"%s"}]' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/my-app:latest > imagedefinitions.json
+ 
 artifacts:
-  files:
-    - imagedefinitions.json
+
+  files: imagedefinitions.json
+ 
