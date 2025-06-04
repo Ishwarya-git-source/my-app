@@ -7,11 +7,9 @@ phases:
       - aws --version
       - echo "🐳 Docker version:"
       - docker --version
-      - echo "🔐 Getting ECR login token..."
-      - echo "Logging into: 316497517854.dkr.ecr.ap-south-1.amazonaws.com"
-      - TOKEN=$(aws ecr get-login-password --region ap-south-1)
-      - echo $TOKEN | head -c 10 && echo " ...token retrieved"
-      - echo "$TOKEN" | docker login --username AWS --password-stdin 316497517854.dkr.ecr.ap-south-1.amazonaws.com || (echo "❌ ECR login failed with code $?"; exit 1)
+      - echo "🔐 Logging into: 316497517854.dkr.ecr.ap-south-1.amazonaws.com"
+      - aws ecr get-login-password --region ap-south-1 | head -c 10 && echo " ...token preview"
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 316497517854.dkr.ecr.ap-south-1.amazonaws.com || (echo "❌ ECR login failed with code $?"; exit 1)
 
   build:
     commands:
