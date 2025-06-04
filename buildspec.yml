@@ -8,8 +8,9 @@ phases:
       - echo "🐳 Docker version:"
       - docker --version
       - echo "🔐 Logging into: 316497517854.dkr.ecr.ap-south-1.amazonaws.com"
-      - aws ecr get-login-password --region ap-south-1 | head -c 10 && echo " ...token preview"
-      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 316497517854.dkr.ecr.ap-south-1.amazonaws.com || (echo "❌ ECR login failed with code $?"; exit 1)
+      - >
+        aws ecr get-login-password --region ap-south-1 |
+        docker login --username AWS --password-stdin 316497517854.dkr.ecr.ap-south-1.amazonaws.com
 
   build:
     commands:
@@ -22,7 +23,9 @@ phases:
       - echo "📤 Pushing Docker image to ECR..."
       - docker push 316497517854.dkr.ecr.ap-south-1.amazonaws.com/my-app:latest
       - echo "📦 Creating imagedefinitions.json for ECS..."
-      - printf '[{"name":"my-app-container","imageUri":"%s"}]' 316497517854.dkr.ecr.ap-south-1.amazonaws.com/my-app:latest > imagedefinitions.json
+      - >
+        printf '[{"name":"my-app-container","imageUri":"%s"}]'
+        316497517854.dkr.ecr.ap-south-1.amazonaws.com/my-app:latest > imagedefinitions.json
 
 artifacts:
   files:
