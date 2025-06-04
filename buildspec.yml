@@ -11,6 +11,7 @@ phases:
   build:
     commands:
       - echo "Building Docker image..."
+      - ls -al
       - docker build -t my-app .
       - docker tag my-app:latest 316497517854.dkr.ecr.ap-south-1.amazonaws.com/my-app:latest
 
